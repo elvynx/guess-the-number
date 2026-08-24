@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Számkitaláló - Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+            color: #00ff00;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            opacity: 0.1;
+            white-space: pre;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            z-index: 10;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .difficulty-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .difficulty-section h3 {
+            margin-bottom: 10px;
+            color: #00aaff;
+        }
+
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .diff-btn {
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .diff-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .diff-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .easy { background: #00aa00; border-color: #00ff00; }
+        .normal { background: #ffaa00; border-color: #ffff00; }
+        .hard { background: #ff6b6b; border-color: #ff0000; }
+        .extreme { background: #660000; border-color: #ff3333; color: #ff0000; }
+
+        .game-section {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #00aa00;
+            color: #000;
+            border-color: #00ff00;
+        }
+
+        button:hover {
+            background: #00ff00;
+            transform: scale(1.05);
+        }
+
+        .progress {
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            background: #1a1a1a;
+            height: 30px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #ffaa00, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .message.info {
+            background: rgba(0, 170, 170, 0.2);
+            border: 2px solid #00aaff;
+            color: #00aaff;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .message.error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .message.warning {
+            background: rgba(255, 170, 0, 0.2);
+            border: 2px solid #ffaa00;
+            color: #ffaa00;
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #00ff00;
+            font-size: 14px;
+            color: #00aaff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .difficulty-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrixBg"></div>
+
+    <div class="container">
+        <h1>🎯 SZÁMKITALÁLÓ - ONLINE 🎯</h1>
+
+        <div class="difficulty-section">
+            <h3>📊 Nehézségi szint:</h3>
+            <div class="difficulty-buttons">
+                <button class="diff-btn easy" onclick="setDifficulty('easy')">🟢 Könnyű</button>
+                <button class="diff-btn normal" onclick="setDifficulty('normal')">🟡 Normál</button>
+                <button class="diff-btn hard" onclick="setDifficulty('hard')">🔴 Nehéz</button>
+                <button class="diff-btn extreme" onclick="setDifficulty('extreme')">⚫ Extrém</button>
+            </div>
+        </div>
+
+        <div class="game-section">
+            <div class="input-group">
+                <input type="number" id="guessInput" placeholder="Add meg a tipped!" onkeypress="if(event.key==='Enter') checkGuess()">
+            </div>
+            <button onclick="checkGuess()">▶ TIPPELEK ◀</button>
+
+            <div class="progress">
+                <span id="progressText">Próbálkozások: 0/?</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">0</div>
+                </div>
+            </div>
+
+            <div class="message info" id="message">
+                🎯 Válassz nehézségi szintet, majd kezdd el a játékot!
+            </div>
+
+            <div class="stats">
+                <div>📊 Győzelmek: <span id="wins">0</span></div>
+                <div>📈 Átlag próba: <span id="average">--</span></div>
+                <div>🏆 Legjobb: <span id="best">--</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let secretNumber = 0;
+        let attempts = 0;
+        let maxAttempts = 7;
+        let gameActive = false;
+        let gameStartTime = 0;
+        let currentDifficulty = null;
+
+        const difficulties = {
+            easy: { min: 1, max: 50, attempts: 10 },
+            normal: { min: 1, max: 100, attempts: 7 },
+            hard: { min: 1, max: 1000, attempts: 5 },
+            extreme: { min: 1, max: 10000, attempts: 3 }
+        };
+
+        const stats = {
+            wins: 0,
+            totalAttempts: 0,
+            bestGame: Infinity
+        };
+
+        function initMatrix() {
+            const chars = "01█▓▒░ぬふあうえおやゆよわをん";
+            const matrixBg = document.getElementById("matrixBg");
+            let text = "";
+            for (let i = 0; i < 100; i++) {
+                for (let j = 0; j < 50; j++) {
+                    text += chars[Math.floor(Math.random() * chars.length)];
+                }
+                text += "\n";
+            }
+            matrixBg.textContent = text;
+        }
+
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                if (type === "success") {
+                    oscillator.frequency.value = 1000;
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                } else if (type === "error") {
+                    oscillator.frequency.value = 300;
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } else if (type === "win") {
+                    const freqs = [800, 1000, 1200, 1400];
+                    freqs.forEach((freq, i) => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.15);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i + 1) * 0.15);
+                        osc.start(audioContext.currentTime + i * 0.15);
+                        osc.stop(audioContext.currentTime + (i + 1) * 0.15);
+                    });
+                }
+            } catch(e) {
+                console.log("Hang nem elérhető");
+            }
+        }
+
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            const diff = difficulties[difficulty];
+            maxAttempts = diff.attempts;
+            attempts = 0;
+            gameActive = true;
+            gameStartTime = Date.now();
+
+            secretNumber = Math.floor(Math.random() * (diff.max - diff.min + 1)) + diff.min;
+
+            const diffNames = {
+                easy: "Könnyű (1-50)",
+                normal: "Normál (1-100)",
+                hard: "Nehéz (1-1000)",
+                extreme: "Extrém (1-10000)"
+            };
+
+            showMessage(`🎯 ${diffNames[difficulty]} módban játszol!`, "info");
+            updateProgress();
+            document.getElementById("guessInput").focus();
+            document.getElementById("guessInput").value = "";
+        }
+
+        function checkGuess() {
+            if (!gameActive) return;
+
+            const guess = parseInt(document.getElementById("guessInput").value);
+            const diff = difficulties[currentDifficulty];
+
+            if (isNaN(guess)) {
+                showMessage("❌ Csak számot írj be!", "error");
+                playSound("error");
+                return;
+            }
+
+            if (guess < diff.min || guess > diff.max) {
+                showMessage(`❌ ${diff.min} és ${diff.max} közötti számot írj be!`, "error");
+                playSound("error");
+                return;
+            }
+
+            attempts++;
+            updateProgress();
+            playSound("success");
+
+            if (guess < secretNumber) {
+                showMessage(`⬆️ Túl alacsony! Még ${maxAttempts - attempts} próbád van.`, "warning");
+            } else if (guess > secretNumber) {
+                showMessage(`⬇️ Túl magas! Még ${maxAttempts - attempts} próbád van.`, "warning");
+            } else {
+                const timeElapsed = ((Date.now() - gameStartTime) / 1000).toFixed(1);
+                showMessage(`🎉 ELTALÁLTAD! A szám: ${secretNumber}<br>${attempts} próba | ${timeElapsed}s`, "success");
+
+                stats.wins++;
+                stats.totalAttempts += attempts;
+                if (attempts < stats.bestGame) {
+                    stats.bestGame = attempts;
+                }
+
+                updateStats();
+                playSound("win");
+                gameActive = false;
+                return;
+            }
+
+            if (attempts >= maxAttempts) {
+                showMessage(`💀 VÉGE! A szám: ${secretNumber} volt`, "error");
+                gameActive = false;
+                playSound("error");
+            }
+
+            document.getElementById("guessInput").value = "";
+            document.getElementById("guessInput").focus();
+        }
+
+        function updateProgress() {
+            const percent = (attempts / maxAttempts) * 100;
+            document.getElementById("progressFill").style.width = percent + "%";
+            document.getElementById("progressFill").textContent = `${attempts}/${maxAttempts}`;
+            document.getElementById("progressText").textContent = `Próbálkozások: ${attempts}/${maxAttempts}`;
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = text;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function updateStats() {
+            document.getElementById("wins").textContent = stats.wins;
+            if (stats.wins > 0) {
+                const avg = (stats.totalAttempts / stats.wins).toFixed(1);
+                document.getElementById("average").textContent = avg;
+            }
+            if (stats.bestGame !== Infinity) {
+                document.getElementById("best").textContent = stats.bestGame;
+            }
+        }
+
+        window.onload = () => {
+            initMatrix();
+        };
+    </script>
+</body>
+</html>
