@@ -22,7 +22,7 @@
 
         body {
             margin: 0;
-            background: #262626;
+            background: var(--bg);
             color: var(--text);
             font-family: "Trebuchet MS", Arial, sans-serif;
             display: flex;
@@ -35,9 +35,7 @@
             width: min(560px, 100%);
             background: var(--panel);
             border: 1px solid #111;
-            border-radius: 18px;
             padding: 22px;
-            box-shadow: 0 14px 35px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
             position: relative;
         }
 
@@ -54,16 +52,8 @@
         .screen {
             background: #171717;
             border: 4px solid #111;
-            border-radius: 9px;
             padding: 24px;
             box-shadow: inset 0 0 25px rgba(0,0,0,.55);
-        }
-
-        .brand {
-            font-size: 12px;
-            letter-spacing: 3px;
-            color: var(--muted);
-            margin-bottom: 5px;
         }
 
         h1 {
@@ -91,14 +81,18 @@
             background: #292929;
             color: #d8d8d8;
             padding: 9px 12px;
-            border-radius: 6px;
             cursor: pointer;
             font: inherit;
             font-size: 13px;
             transition: transform .12s, background .12s, border-color .12s;
         }
 
-        button:hover { transform: translateY(-1px); border-color: #888; background: #353535; }
+        button:hover {
+            transform: translateY(-1px);
+            border-color: #888;
+            background: #353535;
+        }
+
         button:active { transform: translateY(1px); }
 
         .difficulty button.active {
@@ -124,7 +118,6 @@
             background: #242424;
             border: 1px solid #606060;
             color: #fff;
-            border-radius: 6px;
             padding: 13px;
             font-size: 21px;
             text-align: center;
@@ -148,10 +141,8 @@
             min-height: 62px;
             border: 1px solid #474747;
             background: #222;
-            border-radius: 6px;
             padding: 13px;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
@@ -163,10 +154,16 @@
         .status.success { color: #a9cf9c; border-color: #52624c; }
         .status.error { color: var(--danger); border-color: #634848; }
 
-        .attempts { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+        .attempts {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--muted);
+            font-size: 12px;
+        }
 
         .dots { display: flex; gap: 5px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+        .dot { width: 8px; height: 8px; background: #555; }
         .dot.used { background: var(--accent); }
 
         .stats {
@@ -176,11 +173,29 @@
             margin-top: 19px;
         }
 
-        .stat { background: #202020; border: 1px solid #414141; padding: 9px; text-align: center; border-radius: 5px; }
-        .stat small { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat {
+            background: #202020;
+            border: 1px solid #414141;
+            padding: 9px;
+            text-align: center;
+        }
+
+        .stat small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .stat strong { display: block; margin-top: 3px; font-size: 16px; }
 
-        .tip { margin-top: 17px; text-align: center; color: #777; font-size: 11px; }
+        .tip {
+            margin-top: 17px;
+            text-align: center;
+            color: #777;
+            font-size: 11px;
+        }
 
         #loseOverlay {
             position: fixed;
@@ -195,19 +210,22 @@
         #skull {
             color: #ddd;
             font-family: "Courier New", monospace;
-            font-size: clamp(13px, 2.4vw, 20px);
-            line-height: 1.05;
+            font-size: clamp(10px, 2.8vw, 17px);
+            line-height: .92;
             white-space: pre;
             text-align: center;
             text-shadow: 0 0 4px #fff;
         }
 
-        .skull-show { animation: skullIn .35s steps(3), skullOut 1.5s steps(9) .65s forwards; }
+        .skull-show {
+            animation: skullIn .35s steps(3), skullOut 1.5s steps(9) .65s forwards;
+        }
 
         @keyframes skullIn {
             from { opacity: 0; transform: scale(.65); }
             to { opacity: 1; transform: scale(1); }
         }
+
         @keyframes skullOut {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(1.65) translate(8px, -8px); filter: blur(1px); }
@@ -227,7 +245,7 @@
 
         @media (max-width: 480px) {
             body { padding: 12px; }
-            .console { padding: 12px; border-radius: 13px; }
+            .console { padding: 12px; }
             .screen { padding: 17px; }
             .speaker { display: none; }
             h1 { font-size: 25px; }
@@ -240,7 +258,6 @@
     <main class="console">
         <div class="speaker"></div>
         <section class="screen">
-            <div class="brand">ELVYNX // MINI GAME</div>
             <h1>Számkitaláló</h1>
             <div class="subtitle">Találd ki a gép számát. Ne siess.</div>
 
@@ -292,12 +309,22 @@
         };
 
         const stats = { wins: 0, totalAttempts: 0, bestGame: Infinity };
-        const skullArt = `  .-"""-.
- /       \\
-|  x   x  |
-|    ^    |
-|  \\___/  |
- \\_______/`;
+
+        const skullArt = `       .-"""""-.
+    .-'           '-.
+  .'     ##   ##     '.
+ /      #### ####      \\
+|      ####### ####     |
+|      ####### ####     |
+|                      |
+|        .------.      |
+|       /  .--.  \\     |
+|       \\_/  \\_/      |
+|          /\\          |
+|     .---/##\\---.     |
+ \\   /   ######   \\   /
+   '. \\__######__/ .'
+      '-.________.-'`;
 
         function setDifficulty(difficulty) {
             currentDifficulty = difficulty;
@@ -314,6 +341,7 @@
 
             showMessage(`${diff.min}–${diff.max} között gondoltam egy számot.`, '');
             updateProgress();
+
             const input = document.getElementById('guessInput');
             input.value = '';
             input.min = diff.min;
@@ -332,6 +360,7 @@
                 showMessage('Írj be egy egész számot.', 'error');
                 return;
             }
+
             if (guess < diff.min || guess > diff.max) {
                 showMessage(`A szám ${diff.min} és ${diff.max} között van.`, 'error');
                 return;
@@ -374,6 +403,7 @@
 
             const dots = document.getElementById('dots');
             dots.innerHTML = '';
+
             if (currentDifficulty) {
                 for (let i = 0; i < maxAttempts; i++) {
                     const dot = document.createElement('span');
@@ -394,12 +424,15 @@
             document.getElementById('average').textContent = stats.wins
                 ? (stats.totalAttempts / stats.wins).toFixed(1)
                 : '--';
-            document.getElementById('best').textContent = stats.bestGame === Infinity ? '--' : stats.bestGame;
+            document.getElementById('best').textContent = stats.bestGame === Infinity
+                ? '--'
+                : stats.bestGame;
         }
 
         function showLoseAnimation() {
             const overlay = document.getElementById('loseOverlay');
             const skull = document.getElementById('skull');
+
             skull.textContent = skullArt;
             skull.className = '';
             overlay.style.display = 'flex';
