@@ -11,6 +11,15 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+            --panel: rgba(0, 0, 0, 0.8);
+            --text: #00ff00;
+            --muted: #777;
+            --accent: #a9cf9c;
+            --danger: #ff6b6b;
+        }
+
         body {
             background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
             color: #00ff00;
@@ -207,6 +216,16 @@
             border-top: 2px solid #00ff00;
             font-size: 14px;
             color: #00aaff;
+        }
+
+        /* Retro-style dots (if used) */
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+            display: inline-block;
+            margin-right: 5px;
         }
 
         @media (max-width: 600px) {
