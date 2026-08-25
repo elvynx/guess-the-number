@@ -86,7 +86,7 @@
             font-size: 14px;
             font-weight: bold;
             border: 2px solid;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             color: #000;
@@ -122,7 +122,7 @@
             background: #1a1a1a;
             border: 2px solid #00ff00;
             color: #00ff00;
-            border-radius: 5px;
+            border-radius: 8px;
             text-align: center;
         }
 
@@ -136,7 +136,7 @@
             font-size: 16px;
             font-weight: bold;
             border: 2px solid;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             background: #00aa00;
@@ -158,7 +158,7 @@
             background: #1a1a1a;
             height: 30px;
             border: 2px solid #00ff00;
-            border-radius: 5px;
+            border-radius: 8px;
             overflow: hidden;
             margin: 10px 0;
         }
@@ -173,12 +173,13 @@
             justify-content: center;
             color: #000;
             font-weight: bold;
+            border-radius: 6px;
         }
 
         .message {
             margin: 20px 0;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             min-height: 60px;
             display: flex;
             align-items: center;
@@ -377,8 +378,14 @@
 
             showMessage(`🎯 ${diffNames[difficulty]} módban játszol!`, "info");
             updateProgress();
-            document.getElementById("guessInput").focus();
-            document.getElementById("guessInput").value = "";
+
+            const input = document.getElementById("guessInput");
+            if (input) {
+                input.min = diff.min;
+                input.max = diff.max;
+                input.value = "";
+                input.focus();
+            }
         }
 
         function checkGuess() {
@@ -429,8 +436,8 @@
                 playSound("error");
             }
 
-            document.getElementById("guessInput").value = "";
-            document.getElementById("guessInput").focus();
+            const input = document.getElementById("guessInput");
+            if (input) { input.value = ""; input.focus(); }
         }
 
         function updateProgress() {
