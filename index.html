@@ -1,473 +1,519 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 Számkitaláló - Online</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Number</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --line: #3a3a3a;
+    --line-dim: #2a2a2a;
+    --text: #d8d8d0;
+    --dim: #8a8a82;
+    --white: #f2f2ec;
+    --blue: #7ab8e0;
+    --red: #e05a4e;
+    --yellow: #d9b04a;
+    --green: #8fae6a;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0; min-height:100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'VT323', 'Courier New', monospace;
+    -webkit-font-smoothing: none;
+  }
+  body{
+    display:flex; justify-content:center; align-items:flex-start;
+    padding: 48px 24px;
+  }
+  .app{
+    display:flex; gap:16px; align-items:flex-start;
+    width: 100%; max-width: 1080px;
+  }
+  .left-col{ display:flex; flex-direction:column; gap:16px; flex: 1 1 auto; min-width:0; }
+  .right-col{ display:flex; flex-direction:column; gap:16px; width: 280px; flex-shrink:0; }
 
-        :root {
-            --bg: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
-            --panel: rgba(0, 0, 0, 0.8);
-            --text: #00ff00;
-            --muted: #777;
-            --accent: #a9cf9c;
-            --danger: #ff6b6b;
-        }
+  .icon-box{
+    width: 62px; height: 62px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--panel);
+  }
+  .icon-box svg{ width: 30px; height: 30px; }
 
-        body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
-            color: #00ff00;
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+  .panel{
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 24px;
+  }
 
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #00ff00;
-            opacity: 0.1;
-            white-space: pre;
-            overflow: hidden;
-            z-index: 0;
-        }
+  h1{
+    font-weight: normal;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin: 0 0 16px 0;
+    display:flex; align-items:center; gap: 12px;
+  }
+  .prompt{ color: var(--dim); }
 
-        .container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 600px;
-            width: 90%;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-            z-index: 10;
-            position: relative;
-        }
+  .divider{
+    border: none;
+    border-top: 1px dashed var(--line);
+    margin: 0 0 20px 0;
+  }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-            text-shadow: 0 0 10px #00ff00;
-        }
+  .desc{
+    font-size: 20px;
+    color: var(--text);
+    margin: 0 0 20px 0;
+  }
 
-        .difficulty-section {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+  .guess-row{
+    display:flex; gap: 12px; margin-bottom: 20px;
+  }
+  .guess-row input{
+    flex: 1 1 auto;
+    background: #0d0d0d;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 20px;
+    padding: 12px 16px;
+  }
+  .guess-row input::placeholder{ color: var(--dim); }
+  .guess-row input:focus{ outline: none; border-color: var(--dim); }
+  .btn-guess{
+    background: #c9c9c0;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: #0a0a0a;
+    font-family: inherit;
+    font-size: 20px;
+    letter-spacing: 1px;
+    padding: 12px 28px;
+    cursor: pointer;
+  }
+  .btn-guess:hover{ background: #e2e2da; }
+  .btn-guess:disabled{ opacity:.5; cursor:not-allowed; }
 
-        .difficulty-section h3 {
-            margin-bottom: 10px;
-            color: #00aaff;
-        }
+  .feedback{
+    display:flex;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    min-height: 88px;
+  }
+  .feedback .half{
+    flex: 1; text-align:center; padding: 18px 12px;
+  }
+  .feedback .half + .half{ border-left: 1px solid var(--line); }
+  .feedback .label{ font-size: 20px; }
+  .feedback .label.low{ color: var(--blue); }
+  .feedback .label.high{ color: var(--red); }
+  .feedback .sub{ color: var(--dim); font-size: 18px; margin-top: 4px; }
+  .feedback.empty .half{ color: var(--line); }
 
-        .difficulty-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+  .meta-row{
+    display:flex;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .meta-cell{
+    flex:1; padding: 14px 16px;
+  }
+  .meta-cell + .meta-cell{ border-left: 1px solid var(--line); }
+  .meta-label{ font-size: 15px; letter-spacing: 1px; color: var(--dim); text-transform: uppercase; margin-bottom: 6px; }
+  .meta-value{ font-size: 20px; color: var(--yellow); }
+  .meta-cell.attempts .meta-value,
+  .meta-cell.best .meta-value{ color: var(--text); }
+  .change-btn{
+    margin-top: 6px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .change-btn:hover{ border-color: var(--dim); }
 
-        .diff-btn {
-            padding: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border: 2px solid;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #000;
-            font-family: Arial, sans-serif;
-        }
+  .progress-box{
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .progress-label{ font-size: 15px; letter-spacing: 1px; color: var(--dim); text-transform: uppercase; margin-bottom: 12px; }
+  .progress-cells{ display:flex; gap: 8px; flex-wrap: wrap; }
+  .cell{
+    width: 22px; height: 22px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: transparent;
+  }
+  .cell.filled{ background: #b9b9b0; border-color: #b9b9b0; }
 
-        .diff-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-        }
+  .terminal{
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 20px 24px;
+    min-height: 130px;
+    font-size: 19px;
+    display:flex; flex-direction:column; gap: 6px;
+  }
+  .terminal .line{ color: var(--dim); }
+  .terminal .line.win{ color: var(--green); }
+  .terminal .line.lose{ color: var(--red); }
+  .terminal .cursor-row{ color: var(--dim); margin-top: auto; }
 
-        .diff-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+  /* Right column */
+  .side-title{
+    font-size: 18px; letter-spacing: 2px; color: var(--white);
+    text-transform: uppercase; margin: 0 0 14px 0;
+  }
+  .stat-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 10px 0;
+    border-top: 1px dashed var(--line-dim);
+    font-size: 19px;
+  }
+  .stat-row:first-of-type{ border-top:none; }
+  .stat-label{ display:flex; align-items:center; gap: 10px; }
+  .stat-icon{ width:16px; text-align:center; }
+  .stat-value{ color: var(--text); }
+  .stat-value.wins{ color: var(--green); }
+  .stat-value.losses{ color: var(--red); }
 
-        .easy { background: #00aa00; border-color: #00ff00; }
-        .normal { background: #ffaa00; border-color: #ffff00; }
-        .hard { background: #ff6b6b; border-color: #ff0000; }
-        .extreme { background: #660000; border-color: #ff3333; color: #ff0000; }
+  .diff-list{ display:flex; flex-direction:column; gap: 8px; margin-top: 4px; }
+  .diff-btn{
+    display:flex; align-items:center; gap: 10px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 19px;
+    letter-spacing: 1px;
+    padding: 12px 14px;
+    cursor: pointer;
+    text-align:left;
+  }
+  .diff-btn:hover{ border-color: var(--dim); }
+  .diff-btn.active{ background: #1c1c1c; border-color: var(--dim); }
+  .diff-btn .arrow{ width: 14px; color: var(--white); }
+  .diff-btn .range{ color: var(--dim); margin-left: auto; }
 
-        .game-section {
-            text-align: center;
-        }
+  .new-game{
+    margin-top: 8px;
+    display:flex; align-items:center; justify-content:center; gap: 10px;
+    background: #1c1c1c;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 19px;
+    letter-spacing: 1px;
+    padding: 12px 14px;
+    cursor: pointer;
+    width: 100%;
+  }
+  .new-game:hover{ border-color: var(--dim); }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            background: #1a1a1a;
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-
-        button {
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: 2px solid;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #00aa00;
-            color: #000;
-            border-color: #00ff00;
-        }
-
-        button:hover {
-            background: #00ff00;
-            transform: scale(1.05);
-        }
-
-        .progress {
-            margin: 20px 0;
-            font-size: 14px;
-        }
-
-        .progress-bar {
-            background: #1a1a1a;
-            height: 30px;
-            border: 2px solid #00ff00;
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #ffaa00, #ff6b6b);
-            width: 0%;
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-weight: bold;
-            border-radius: 6px;
-        }
-
-        .message {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .message.info {
-            background: rgba(0, 170, 170, 0.2);
-            border: 2px solid #00aaff;
-            color: #00aaff;
-        }
-
-        .message.success {
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-        }
-
-        .message.error {
-            background: rgba(255, 107, 107, 0.2);
-            border: 2px solid #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .message.warning {
-            background: rgba(255, 170, 0, 0.2);
-            border: 2px solid #ffaa00;
-            color: #ffaa00;
-        }
-
-        .stats {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #00ff00;
-            font-size: 14px;
-            color: #00aaff;
-        }
-
-        /* Retro-style dots (if used) */
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #555;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            .difficulty-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  @media (max-width: 760px){
+    .app{ flex-direction: column; }
+    .right-col{ width: 100%; }
+  }
+</style>
 </head>
 <body>
-    <div class="matrix-bg" id="matrixBg"></div>
 
-    <div class="container">
-        <h1>🎯 SZÁMKITALÁLÓ - ONLINE 🎯</h1>
+<div class="app">
 
-        <div class="difficulty-section">
-            <h3>📊 Nehézségi szint:</h3>
-            <div class="difficulty-buttons">
-                <button class="diff-btn easy" onclick="setDifficulty('easy')">🟢 Könnyű</button>
-                <button class="diff-btn normal" onclick="setDifficulty('normal')">🟡 Normál</button>
-                <button class="diff-btn hard" onclick="setDifficulty('hard')">🔴 Nehéz</button>
-                <button class="diff-btn extreme" onclick="setDifficulty('extreme')">⚫ Extrém</button>
-            </div>
-        </div>
-
-        <div class="game-section">
-            <div class="input-group">
-                <input type="number" id="guessInput" placeholder="Add meg a tipped!" onkeypress="if(event.key==='Enter') checkGuess()">
-            </div>
-            <button onclick="checkGuess()">▶ TIPPELEK ◀</button>
-
-            <div class="progress">
-                <span id="progressText">Próbálkozások: 0/?</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 0%">0</div>
-                </div>
-            </div>
-
-            <div class="message info" id="message">
-                🎯 Válassz nehézségi szintet, majd kezdd el a játékot!
-            </div>
-
-            <div class="stats">
-                <div>📊 Győzelmek: <span id="wins">0</span></div>
-                <div>📈 Átlag próba: <span id="average">--</span></div>
-                <div>🏆 Legjobb: <span id="best">--</span></div>
-            </div>
-        </div>
+  <div class="left-col">
+    <div class="icon-box" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d8d8d0" stroke-width="1.4">
+        <path d="M12 2C7 2 4 5.5 4 10c0 3 1.6 4.8 2.5 6v3.5c0 .8.7 1.5 1.5 1.5h1v-2h1.5v2h1v-2h1.5v2h1c.8 0 1.5-.7 1.5-1.5V16c.9-1.2 2.5-3 2.5-6 0-4.5-3-8-8-8z"/>
+        <circle cx="9" cy="10" r="1.4" fill="#d8d8d0"/>
+        <circle cx="15" cy="10" r="1.4" fill="#d8d8d0"/>
+      </svg>
     </div>
 
-    <script>
-        let secretNumber = 0;
-        let attempts = 0;
-        let maxAttempts = 7;
-        let gameActive = false;
-        let gameStartTime = 0;
-        let currentDifficulty = null;
+    <div class="panel">
+      <h1><span class="prompt">&gt;_</span> GUESS THE NUMBER</h1>
+      <hr class="divider">
 
-        const difficulties = {
-            easy: { min: 1, max: 50, attempts: 10 },
-            normal: { min: 1, max: 100, attempts: 7 },
-            hard: { min: 1, max: 1000, attempts: 5 },
-            extreme: { min: 1, max: 10000, attempts: 3 }
-        };
+      <p class="desc" id="rangeDesc">I'm thinking of a number between 1 and 100.</p>
 
-        const stats = {
-            wins: 0,
-            totalAttempts: 0,
-            bestGame: Infinity
-        };
+      <div class="guess-row">
+        <input type="number" id="guessInput" placeholder="Enter your guess...">
+        <button class="btn-guess" id="guessBtn" onclick="checkGuess()">GUESS</button>
+      </div>
 
-        function initMatrix() {
-            const chars = "01█▓▒░ぬふあうえおやゆよわをん";
-            const matrixBg = document.getElementById("matrixBg");
-            let text = "";
-            for (let i = 0; i < 100; i++) {
-                for (let j = 0; j < 50; j++) {
-                    text += chars[Math.floor(Math.random() * chars.length)];
-                }
-                text += "\n";
-            }
-            matrixBg.textContent = text;
-        }
+      <div class="feedback empty" id="feedback">
+        <div class="half">
+          <div class="label low">TOO LOW</div>
+          <div class="sub">Try higher</div>
+        </div>
+        <div class="half">
+          <div class="label high">TOO HIGH</div>
+          <div class="sub">Try lower</div>
+        </div>
+      </div>
 
-        function playSound(type) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+      <div class="meta-row">
+        <div class="meta-cell diff">
+          <div class="meta-label">Difficulty</div>
+          <div class="meta-value" id="diffValue">Medium (1-500)</div>
+          <button class="change-btn" onclick="scrollToDifficulty()">CHANGE</button>
+        </div>
+        <div class="meta-cell attempts">
+          <div class="meta-label">Attempts</div>
+          <div class="meta-value" id="attemptsValue">0</div>
+        </div>
+        <div class="meta-cell best">
+          <div class="meta-label">Best</div>
+          <div class="meta-value" id="bestValue">-</div>
+        </div>
+      </div>
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+      <div class="progress-box">
+        <div class="progress-label">Progress</div>
+        <div class="progress-cells" id="progressCells"></div>
+      </div>
+    </div>
 
-                if (type === "success") {
-                    oscillator.frequency.value = 1000;
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.2);
-                } else if (type === "error") {
-                    oscillator.frequency.value = 300;
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.3);
-                } else if (type === "win") {
-                    const freqs = [800, 1000, 1200, 1400];
-                    freqs.forEach((freq, i) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.connect(gain);
-                        gain.connect(audioContext.destination);
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.15);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i + 1) * 0.15);
-                        osc.start(audioContext.currentTime + i * 0.15);
-                        osc.stop(audioContext.currentTime + (i + 1) * 0.15);
-                    });
-                }
-            } catch(e) {
-                console.log("Hang nem elérhető");
-            }
-        }
+    <div class="terminal" id="terminal">
+      <div class="cursor-row">&gt;_</div>
+    </div>
+  </div>
 
-        function setDifficulty(difficulty) {
-            currentDifficulty = difficulty;
-            const diff = difficulties[difficulty];
-            maxAttempts = diff.attempts;
-            attempts = 0;
-            gameActive = true;
-            gameStartTime = Date.now();
+  <div class="right-col">
+    <div class="panel">
+      <div class="side-title">Stats</div>
+      <div class="stat-row">
+        <span class="stat-label"><span class="stat-icon">🏆</span> WINS</span>
+        <span class="stat-value wins" id="statWins">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label"><span class="stat-icon">💀</span> LOSSES</span>
+        <span class="stat-value losses" id="statLosses">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label"><span class="stat-icon">📊</span> BEST SCORE</span>
+        <span class="stat-value" id="statBest">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label"><span class="stat-icon">🎮</span> GAMES PLAYED</span>
+        <span class="stat-value" id="statGames">0</span>
+      </div>
+    </div>
 
-            secretNumber = Math.floor(Math.random() * (diff.max - diff.min + 1)) + diff.min;
+    <div class="panel" id="difficultyPanel">
+      <div class="side-title">Difficulty</div>
+      <div class="diff-list" id="diffList">
+        <button class="diff-btn" data-diff="easy" onclick="setDifficulty('easy')">
+          <span class="arrow"></span> EASY <span class="range">(0-50)</span>
+        </button>
+        <button class="diff-btn active" data-diff="medium" onclick="setDifficulty('medium')">
+          <span class="arrow">▶</span> MEDIUM <span class="range">(0-100)</span>
+        </button>
+        <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">
+          <span class="arrow"></span> HARD <span class="range">(0-200)</span>
+        </button>
+        <button class="diff-btn" data-diff="insane" onclick="setDifficulty('insane')">
+          <span class="arrow"></span> INSANE <span class="range">(0-500)</span>
+        </button>
+      </div>
+      <button class="new-game" onclick="newGame()">⟲ NEW GAME</button>
+    </div>
+  </div>
 
-            const diffNames = {
-                easy: "Könnyű (1-50)",
-                normal: "Normál (1-100)",
-                hard: "Nehéz (1-1000)",
-                extreme: "Extrém (1-10000)"
-            };
+</div>
 
-            showMessage(`🎯 ${diffNames[difficulty]} módban játszol!`, "info");
-            updateProgress();
+<script>
+  const difficulties = {
+    easy:   { min: 0, max: 50,   attempts: 8,  label: 'Easy (0-50)' },
+    medium: { min: 0, max: 100,  attempts: 10, label: 'Medium (0-100)' },
+    hard:   { min: 0, max: 200,  attempts: 12, label: 'Hard (0-200)' },
+    insane: { min: 0, max: 500,  attempts: 14, label: 'Insane (0-500)' }
+  };
 
-            const input = document.getElementById("guessInput");
-            if (input) {
-                input.min = diff.min;
-                input.max = diff.max;
-                input.value = "";
-                input.focus();
-            }
-        }
+  let currentDiff = 'medium';
+  let secretNumber = 0;
+  let attempts = 0;
+  let gameActive = true;
+  let bestThisDifficulty = {};
 
-        function checkGuess() {
-            if (!gameActive) return;
+  const stats = { wins: 0, losses: 0, best: null, games: 0 };
 
-            const guess = parseInt(document.getElementById("guessInput").value);
-            const diff = difficulties[currentDifficulty];
+  function startRound(diffKey){
+    currentDiff = diffKey;
+    const d = difficulties[diffKey];
+    secretNumber = Math.floor(Math.random() * (d.max - d.min + 1)) + d.min;
+    attempts = 0;
+    gameActive = true;
 
-            if (isNaN(guess)) {
-                showMessage("❌ Csak számot írj be!", "error");
-                playSound("error");
-                return;
-            }
+    document.getElementById('rangeDesc').textContent =
+      `I'm thinking of a number between ${d.min} and ${d.max}.`;
+    document.getElementById('diffValue').textContent = d.label;
+    document.getElementById('attemptsValue').textContent = '0';
+    document.getElementById('bestValue').textContent =
+      bestThisDifficulty[diffKey] != null ? bestThisDifficulty[diffKey] : '-';
 
-            if (guess < diff.min || guess > diff.max) {
-                showMessage(`❌ ${diff.min} és ${diff.max} közötti számot írj be!`, "error");
-                playSound("error");
-                return;
-            }
+    resetFeedback();
+    buildProgressCells(d.attempts);
+    logLine(`New game started — guess a number between ${d.min} and ${d.max}.`, 'dim');
 
-            attempts++;
-            updateProgress();
-            playSound("success");
+    const input = document.getElementById('guessInput');
+    input.value = '';
+    input.disabled = false;
+    document.getElementById('guessBtn').disabled = false;
+    input.focus();
+  }
 
-            if (guess < secretNumber) {
-                showMessage(`⬆️ Túl alacsony! Még ${maxAttempts - attempts} próbád van.`, "warning");
-            } else if (guess > secretNumber) {
-                showMessage(`⬇️ Túl magas! Még ${maxAttempts - attempts} próbád van.`, "warning");
-            } else {
-                const timeElapsed = ((Date.now() - gameStartTime) / 1000).toFixed(1);
-                showMessage(`🎉 ELTALÁLTAD! A szám: ${secretNumber}<br>${attempts} próba | ${timeElapsed}s`, "success");
+  function setDifficulty(diffKey){
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      const isActive = btn.dataset.diff === diffKey;
+      btn.classList.toggle('active', isActive);
+      btn.querySelector('.arrow').textContent = isActive ? '▶' : '';
+    });
+    startRound(diffKey);
+  }
 
-                stats.wins++;
-                stats.totalAttempts += attempts;
-                if (attempts < stats.bestGame) {
-                    stats.bestGame = attempts;
-                }
+  function newGame(){
+    startRound(currentDiff);
+  }
 
-                updateStats();
-                playSound("win");
-                gameActive = false;
-                return;
-            }
+  function scrollToDifficulty(){
+    document.getElementById('difficultyPanel').scrollIntoView({ behavior:'smooth', block:'center' });
+  }
 
-            if (attempts >= maxAttempts) {
-                showMessage(`💀 VÉGE! A szám: ${secretNumber} volt`, "error");
-                gameActive = false;
-                playSound("error");
-            }
+  function buildProgressCells(max){
+    const wrap = document.getElementById('progressCells');
+    wrap.innerHTML = '';
+    for(let i=0;i<max;i++){
+      const c = document.createElement('div');
+      c.className = 'cell';
+      wrap.appendChild(c);
+    }
+  }
 
-            const input = document.getElementById("guessInput");
-            if (input) { input.value = ""; input.focus(); }
-        }
+  function updateProgressCells(){
+    const cells = document.querySelectorAll('#progressCells .cell');
+    cells.forEach((c, i) => c.classList.toggle('filled', i < attempts));
+  }
 
-        function updateProgress() {
-            const percent = (attempts / maxAttempts) * 100;
-            document.getElementById("progressFill").style.width = percent + "%";
-            document.getElementById("progressFill").textContent = `${attempts}/${maxAttempts}`;
-            document.getElementById("progressText").textContent = `Próbálkozások: ${attempts}/${maxAttempts}`;
-        }
+  function resetFeedback(){
+    const fb = document.getElementById('feedback');
+    fb.classList.add('empty');
+  }
 
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById("message");
-            messageDiv.innerHTML = text;
-            messageDiv.className = `message ${type}`;
-        }
+  function showFeedback(direction){
+    const fb = document.getElementById('feedback');
+    fb.classList.remove('empty');
+    const low = fb.querySelector('.low').parentElement;
+    const high = fb.querySelector('.high').parentElement;
+    low.style.opacity = direction === 'low' ? '1' : '0.35';
+    high.style.opacity = direction === 'high' ? '1' : '0.35';
+  }
 
-        function updateStats() {
-            document.getElementById("wins").textContent = stats.wins;
-            if (stats.wins > 0) {
-                const avg = (stats.totalAttempts / stats.wins).toFixed(1);
-                document.getElementById("average").textContent = avg;
-            }
-            if (stats.bestGame !== Infinity) {
-                document.getElementById("best").textContent = stats.bestGame;
-            }
-        }
+  function logLine(text, kind){
+    const term = document.getElementById('terminal');
+    const cursorRow = term.querySelector('.cursor-row');
+    const line = document.createElement('div');
+    line.className = 'line' + (kind ? ' ' + kind : '');
+    line.textContent = '> ' + text;
+    term.insertBefore(line, cursorRow);
+    while (term.querySelectorAll('.line').length > 5) {
+      term.removeChild(term.querySelector('.line'));
+    }
+  }
 
-        window.onload = () => {
-            initMatrix();
-        };
-    </script>
-    <script src="https://cdn.counter.dev/script.js" data-id="ae4863f7-4922-43de-b9fc-87f792b147eb" data-utcoffset="2"></script>
+  function checkGuess(){
+    if(!gameActive) return;
+    const d = difficulties[currentDiff];
+    const val = document.getElementById('guessInput').value;
+    const guess = parseInt(val, 10);
+
+    if(isNaN(guess)){
+      logLine('Enter a valid number.', 'lose');
+      return;
+    }
+    if(guess < d.min || guess > d.max){
+      logLine(`Guess must be between ${d.min} and ${d.max}.`, 'lose');
+      return;
+    }
+
+    attempts++;
+    document.getElementById('attemptsValue').textContent = attempts;
+    updateProgressCells();
+
+    if(guess < secretNumber){
+      showFeedback('low');
+      logLine(`${guess} — too low.`, 'dim');
+    } else if(guess > secretNumber){
+      showFeedback('high');
+      logLine(`${guess} — too high.`, 'dim');
+    } else {
+      logLine(`${guess} — correct! Solved in ${attempts} attempts.`, 'win');
+      stats.wins++;
+      stats.games++;
+      if(bestThisDifficulty[currentDiff] == null || attempts < bestThisDifficulty[currentDiff]){
+        bestThisDifficulty[currentDiff] = attempts;
+        document.getElementById('bestValue').textContent = attempts;
+      }
+      if(stats.best == null || attempts < stats.best){ stats.best = attempts; }
+      refreshStats();
+      endRound();
+      return;
+    }
+
+    if(attempts >= d.attempts){
+      logLine(`Out of attempts. The number was ${secretNumber}.`, 'lose');
+      stats.losses++;
+      stats.games++;
+      refreshStats();
+      endRound();
+    }
+
+    document.getElementById('guessInput').value = '';
+    document.getElementById('guessInput').focus();
+  }
+
+  function endRound(){
+    gameActive = false;
+    document.getElementById('guessInput').disabled = true;
+    document.getElementById('guessBtn').disabled = true;
+  }
+
+  function refreshStats(){
+    document.getElementById('statWins').textContent = stats.wins;
+    document.getElementById('statLosses').textContent = stats.losses;
+    document.getElementById('statBest').textContent = stats.best != null ? stats.best : '-';
+    document.getElementById('statGames').textContent = stats.games;
+  }
+
+  document.getElementById('guessInput').addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') checkGuess();
+  });
+
+  startRound('medium');
+</script>
+
+<script src="https://cdn.counter.dev/script.js" data-id="ae4863f7-4922-43de-b9fc-87f792b147eb" data-utcoffset="2"></script>
 </body>
 </html>
