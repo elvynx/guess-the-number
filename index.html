@@ -3,267 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 Számkitaláló - Online</title>
+    <title>Számkitaláló</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { box-sizing: border-box; }
+
+        :root {
+            --bg: #262626;
+            --panel: #333333;
+            --panel-dark: #1d1d1d;
+            --line: #555555;
+            --text: #e7e7e7;
+            --muted: #9b9b9b;
+            --accent: #d8c37a;
+            --danger: #c97878;
         }
 
+        html, body { min-height: 100%; }
+
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
-            color: #00ff00;
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
+            margin: 0;
+            background: #262626;
+            color: var(--text);
+            font-family: "Trebuchet MS", Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            padding: 24px;
         }
 
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #00ff00;
-            opacity: 0.1;
-            white-space: pre;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 600px;
-            width: 90%;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-            z-index: 10;
+        .console {
+            width: min(560px, 100%);
+            background: var(--panel);
+            border: 1px solid #111;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 14px 35px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
             position: relative;
         }
 
+        .speaker {
+            position: absolute;
+            right: 22px;
+            top: 22px;
+            width: 62px;
+            height: 34px;
+            background: repeating-linear-gradient(0deg, #1b1b1b 0 3px, transparent 3px 7px);
+            opacity: .65;
+        }
+
+        .screen {
+            background: #171717;
+            border: 4px solid #111;
+            border-radius: 9px;
+            padding: 24px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,.55);
+        }
+
+        .brand {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+
         h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-            text-shadow: 0 0 10px #00ff00;
+            margin: 0 0 5px;
+            font-size: 30px;
+            letter-spacing: 1px;
+            font-weight: 800;
         }
 
-        .difficulty-section {
-            text-align: center;
-            margin-bottom: 25px;
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 22px;
         }
 
-        .difficulty-section h3 {
-            margin-bottom: 10px;
-            color: #00aaff;
-        }
-
-        .difficulty-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .diff-btn {
-            padding: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border: 2px solid;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #000;
-            font-family: Arial, sans-serif;
-        }
-
-        .diff-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-        }
-
-        .diff-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .easy { background: #00aa00; border-color: #00ff00; }
-        .normal { background: #ffaa00; border-color: #ffff00; }
-        .hard { background: #ff6b6b; border-color: #ff0000; }
-        .extreme { background: #660000; border-color: #ff3333; color: #ff0000; }
-
-        .game-section {
-            text-align: center;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            background: #1a1a1a;
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        .difficulty {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: 2px solid;
-            border-radius: 5px;
+            border: 1px solid #5f5f5f;
+            background: #292929;
+            color: #d8d8d8;
+            padding: 9px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
-            background: #00aa00;
-            color: #000;
-            border-color: #00ff00;
+            font: inherit;
+            font-size: 13px;
+            transition: transform .12s, background .12s, border-color .12s;
         }
 
-        button:hover {
-            background: #00ff00;
-            transform: scale(1.05);
+        button:hover { transform: translateY(-1px); border-color: #888; background: #353535; }
+        button:active { transform: translateY(1px); }
+
+        .difficulty button.active {
+            color: #181818;
+            background: var(--accent);
+            border-color: var(--accent);
+            font-weight: bold;
         }
 
-        .progress {
-            margin: 20px 0;
+        .label {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 7px;
+        }
+
+        .input-row { display: flex; gap: 8px; }
+
+        input[type="number"] {
+            min-width: 0;
+            flex: 1;
+            background: #242424;
+            border: 1px solid #606060;
+            color: #fff;
+            border-radius: 6px;
+            padding: 13px;
+            font-size: 21px;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="number"]:focus { border-color: var(--accent); }
+
+        .guess-btn {
+            min-width: 112px;
+            background: #dedede;
+            color: #202020;
+            border-color: #eee;
+            font-weight: bold;
+        }
+
+        .guess-btn:hover { background: #fff; }
+
+        .status {
+            margin: 16px 0;
+            min-height: 62px;
+            border: 1px solid #474747;
+            background: #222;
+            border-radius: 6px;
+            padding: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #cfcfcf;
             font-size: 14px;
         }
 
-        .progress-bar {
-            background: #1a1a1a;
-            height: 30px;
-            border: 2px solid #00ff00;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
+        .status.warning { color: var(--accent); }
+        .status.success { color: #a9cf9c; border-color: #52624c; }
+        .status.error { color: var(--danger); border-color: #634848; }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #ffaa00, #ff6b6b);
-            width: 0%;
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-weight: bold;
-        }
+        .attempts { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
 
-        .message {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 5px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .message.info {
-            background: rgba(0, 170, 170, 0.2);
-            border: 2px solid #00aaff;
-            color: #00aaff;
-        }
-
-        .message.success {
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-        }
-
-        .message.error {
-            background: rgba(255, 107, 107, 0.2);
-            border: 2px solid #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .message.warning {
-            background: rgba(255, 170, 0, 0.2);
-            border: 2px solid #ffaa00;
-            color: #ffaa00;
-        }
+        .dots { display: flex; gap: 5px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+        .dot.used { background: var(--accent); }
 
         .stats {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #00ff00;
-            font-size: 14px;
-            color: #00aaff;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 19px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
+        .stat { background: #202020; border: 1px solid #414141; padding: 9px; text-align: center; border-radius: 5px; }
+        .stat small { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat strong { display: block; margin-top: 3px; font-size: 16px; }
 
-            h1 {
-                font-size: 22px;
-            }
+        .tip { margin-top: 17px; text-align: center; color: #777; font-size: 11px; }
 
-            .difficulty-buttons {
-                grid-template-columns: 1fr;
-            }
+        #loseOverlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        #skull {
+            color: #ddd;
+            font-family: "Courier New", monospace;
+            font-size: clamp(13px, 2.4vw, 20px);
+            line-height: 1.05;
+            white-space: pre;
+            text-align: center;
+            text-shadow: 0 0 4px #fff;
+        }
+
+        .skull-show { animation: skullIn .35s steps(3), skullOut 1.5s steps(9) .65s forwards; }
+
+        @keyframes skullIn {
+            from { opacity: 0; transform: scale(.65); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes skullOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.65) translate(8px, -8px); filter: blur(1px); }
+        }
+
+        .pixel {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #ddd;
+            animation: pixelAway .9s steps(6) forwards;
+        }
+
+        @keyframes pixelAway {
+            to { opacity: 0; transform: translate(var(--x), var(--y)); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .console { padding: 12px; border-radius: 13px; }
+            .screen { padding: 17px; }
+            .speaker { display: none; }
+            h1 { font-size: 25px; }
+            .input-row { flex-direction: column; }
+            .guess-btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="matrix-bg" id="matrixBg"></div>
+    <main class="console">
+        <div class="speaker"></div>
+        <section class="screen">
+            <div class="brand">ELVYNX // MINI GAME</div>
+            <h1>Számkitaláló</h1>
+            <div class="subtitle">Találd ki a gép számát. Ne siess.</div>
 
-    <div class="container">
-        <h1>🎯 SZÁMKITALÁLÓ - ONLINE 🎯</h1>
-
-        <div class="difficulty-section">
-            <h3>📊 Nehézségi szint:</h3>
-            <div class="difficulty-buttons">
-                <button class="diff-btn easy" onclick="setDifficulty('easy')">🟢 Könnyű</button>
-                <button class="diff-btn normal" onclick="setDifficulty('normal')">🟡 Normál</button>
-                <button class="diff-btn hard" onclick="setDifficulty('hard')">🔴 Nehéz</button>
-                <button class="diff-btn extreme" onclick="setDifficulty('extreme')">⚫ Extrém</button>
-            </div>
-        </div>
-
-        <div class="game-section">
-            <div class="input-group">
-                <input type="number" id="guessInput" placeholder="Add meg a tipped!" onkeypress="if(event.key==='Enter') checkGuess()">
-            </div>
-            <button onclick="checkGuess()">▶ TIPPELEK ◀</button>
-
-            <div class="progress">
-                <span id="progressText">Próbálkozások: 0/?</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 0%">0</div>
-                </div>
+            <div class="label">Nehézség</div>
+            <div class="difficulty">
+                <button data-difficulty="easy" onclick="setDifficulty('easy')">Könnyű</button>
+                <button data-difficulty="normal" onclick="setDifficulty('normal')">Normál</button>
+                <button data-difficulty="hard" onclick="setDifficulty('hard')">Nehéz</button>
+                <button data-difficulty="extreme" onclick="setDifficulty('extreme')">Extrém</button>
             </div>
 
-            <div class="message info" id="message">
-                🎯 Válassz nehézségi szintet, majd kezdd el a játékot!
+            <div class="label">A tipped</div>
+            <div class="input-row">
+                <input type="number" id="guessInput" placeholder="?" onkeydown="if(event.key === 'Enter') checkGuess()">
+                <button class="guess-btn" onclick="checkGuess()">Tipp</button>
+            </div>
+
+            <div class="status" id="message">Válassz egy nehézséget a kezdéshez.</div>
+
+            <div class="attempts">
+                <span id="progressText">Próbák: 0 / -</span>
+                <div class="dots" id="dots"></div>
             </div>
 
             <div class="stats">
-                <div>📊 Győzelmek: <span id="wins">0</span></div>
-                <div>📈 Átlag próba: <span id="average">--</span></div>
-                <div>🏆 Legjobb: <span id="best">--</span></div>
+                <div class="stat"><small>Győzelem</small><strong id="wins">0</strong></div>
+                <div class="stat"><small>Átlag</small><strong id="average">--</strong></div>
+                <div class="stat"><small>Rekord</small><strong id="best">--</strong></div>
             </div>
-        </div>
-    </div>
+            <div class="tip">ENTER = tipp &nbsp;•&nbsp; új mód = új játék</div>
+        </section>
+    </main>
+
+    <div id="loseOverlay"><div id="skull"></div></div>
 
     <script>
         let secretNumber = 0;
@@ -280,64 +291,13 @@
             extreme: { min: 1, max: 10000, attempts: 3 }
         };
 
-        const stats = {
-            wins: 0,
-            totalAttempts: 0,
-            bestGame: Infinity
-        };
-
-        function initMatrix() {
-            const chars = "01█▓▒░ぬふあうえおやゆよわをん";
-            const matrixBg = document.getElementById("matrixBg");
-            let text = "";
-            for (let i = 0; i < 100; i++) {
-                for (let j = 0; j < 50; j++) {
-                    text += chars[Math.floor(Math.random() * chars.length)];
-                }
-                text += "\n";
-            }
-            matrixBg.textContent = text;
-        }
-
-        function playSound(type) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                if (type === "success") {
-                    oscillator.frequency.value = 1000;
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.2);
-                } else if (type === "error") {
-                    oscillator.frequency.value = 300;
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.3);
-                } else if (type === "win") {
-                    const freqs = [800, 1000, 1200, 1400];
-                    freqs.forEach((freq, i) => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        osc.connect(gain);
-                        gain.connect(audioContext.destination);
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.15);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i + 1) * 0.15);
-                        osc.start(audioContext.currentTime + i * 0.15);
-                        osc.stop(audioContext.currentTime + (i + 1) * 0.15);
-                    });
-                }
-            } catch(e) {
-                console.log("Hang nem elérhető");
-            }
-        }
+        const stats = { wins: 0, totalAttempts: 0, bestGame: Infinity };
+        const skullArt = `  .-"""-.
+ /       \\
+|  x   x  |
+|    ^    |
+|  \\___/  |
+ \\_______/`;
 
         function setDifficulty(difficulty) {
             currentDifficulty = difficulty;
@@ -346,101 +306,126 @@
             attempts = 0;
             gameActive = true;
             gameStartTime = Date.now();
-
             secretNumber = Math.floor(Math.random() * (diff.max - diff.min + 1)) + diff.min;
 
-            const diffNames = {
-                easy: "Könnyű (1-50)",
-                normal: "Normál (1-100)",
-                hard: "Nehéz (1-1000)",
-                extreme: "Extrém (1-10000)"
-            };
+            document.querySelectorAll('[data-difficulty]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.difficulty === difficulty);
+            });
 
-            showMessage(`🎯 ${diffNames[difficulty]} módban játszol!`, "info");
+            showMessage(`${diff.min}–${diff.max} között gondoltam egy számot.`, '');
             updateProgress();
-            document.getElementById("guessInput").focus();
-            document.getElementById("guessInput").value = "";
+            const input = document.getElementById('guessInput');
+            input.value = '';
+            input.min = diff.min;
+            input.max = diff.max;
+            input.focus();
         }
 
         function checkGuess() {
             if (!gameActive) return;
 
-            const guess = parseInt(document.getElementById("guessInput").value);
+            const input = document.getElementById('guessInput');
+            const guess = Number(input.value);
             const diff = difficulties[currentDifficulty];
 
-            if (isNaN(guess)) {
-                showMessage("❌ Csak számot írj be!", "error");
-                playSound("error");
+            if (!Number.isInteger(guess)) {
+                showMessage('Írj be egy egész számot.', 'error');
                 return;
             }
-
             if (guess < diff.min || guess > diff.max) {
-                showMessage(`❌ ${diff.min} és ${diff.max} közötti számot írj be!`, "error");
-                playSound("error");
+                showMessage(`A szám ${diff.min} és ${diff.max} között van.`, 'error');
                 return;
             }
 
             attempts++;
-            updateProgress();
-            playSound("success");
 
             if (guess < secretNumber) {
-                showMessage(`⬆️ Túl alacsony! Még ${maxAttempts - attempts} próbád van.`, "warning");
+                showMessage(`Túl alacsony. Még ${maxAttempts - attempts} próbád van.`, 'warning');
             } else if (guess > secretNumber) {
-                showMessage(`⬇️ Túl magas! Még ${maxAttempts - attempts} próbád van.`, "warning");
+                showMessage(`Túl magas. Még ${maxAttempts - attempts} próbád van.`, 'warning');
             } else {
-                const timeElapsed = ((Date.now() - gameStartTime) / 1000).toFixed(1);
-                showMessage(`🎉 ELTALÁLTAD! A szám: ${secretNumber}<br>${attempts} próba | ${timeElapsed}s`, "success");
-
+                const seconds = ((Date.now() - gameStartTime) / 1000).toFixed(1);
+                showMessage(`Eltaláltad! ${attempts} próbából, ${seconds} mp alatt.`, 'success');
                 stats.wins++;
                 stats.totalAttempts += attempts;
-                if (attempts < stats.bestGame) {
-                    stats.bestGame = attempts;
-                }
-
+                stats.bestGame = Math.min(stats.bestGame, attempts);
                 updateStats();
-                playSound("win");
                 gameActive = false;
+                input.value = '';
+                updateProgress();
                 return;
             }
 
-            if (attempts >= maxAttempts) {
-                showMessage(`💀 VÉGE! A szám: ${secretNumber} volt`, "error");
-                gameActive = false;
-                playSound("error");
-            }
+            updateProgress();
+            input.value = '';
+            input.focus();
 
-            document.getElementById("guessInput").value = "";
-            document.getElementById("guessInput").focus();
+            if (attempts >= maxAttempts) {
+                gameActive = false;
+                showMessage(`Vége. A szám ${secretNumber} volt.`, 'error');
+                showLoseAnimation();
+            }
         }
 
         function updateProgress() {
-            const percent = (attempts / maxAttempts) * 100;
-            document.getElementById("progressFill").style.width = percent + "%";
-            document.getElementById("progressFill").textContent = `${attempts}/${maxAttempts}`;
-            document.getElementById("progressText").textContent = `Próbálkozások: ${attempts}/${maxAttempts}`;
+            document.getElementById('progressText').textContent = currentDifficulty
+                ? `Próbák: ${attempts} / ${maxAttempts}`
+                : 'Próbák: 0 / -';
+
+            const dots = document.getElementById('dots');
+            dots.innerHTML = '';
+            if (currentDifficulty) {
+                for (let i = 0; i < maxAttempts; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot' + (i < attempts ? ' used' : '');
+                    dots.appendChild(dot);
+                }
+            }
         }
 
         function showMessage(text, type) {
-            const messageDiv = document.getElementById("message");
-            messageDiv.innerHTML = text;
-            messageDiv.className = `message ${type}`;
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = 'status' + (type ? ' ' + type : '');
         }
 
         function updateStats() {
-            document.getElementById("wins").textContent = stats.wins;
-            if (stats.wins > 0) {
-                const avg = (stats.totalAttempts / stats.wins).toFixed(1);
-                document.getElementById("average").textContent = avg;
-            }
-            if (stats.bestGame !== Infinity) {
-                document.getElementById("best").textContent = stats.bestGame;
-            }
+            document.getElementById('wins').textContent = stats.wins;
+            document.getElementById('average').textContent = stats.wins
+                ? (stats.totalAttempts / stats.wins).toFixed(1)
+                : '--';
+            document.getElementById('best').textContent = stats.bestGame === Infinity ? '--' : stats.bestGame;
         }
 
-        window.onload = () => {
-            initMatrix();
-        };
+        function showLoseAnimation() {
+            const overlay = document.getElementById('loseOverlay');
+            const skull = document.getElementById('skull');
+            skull.textContent = skullArt;
+            skull.className = '';
+            overlay.style.display = 'flex';
+            void skull.offsetWidth;
+            skull.classList.add('skull-show');
+
+            for (let i = 0; i < 22; i++) {
+                const pixel = document.createElement('span');
+                pixel.className = 'pixel';
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 70 + Math.random() * 180;
+                pixel.style.left = `calc(50% + ${(Math.random() - .5) * 150}px)`;
+                pixel.style.top = `calc(50% + ${(Math.random() - .5) * 100}px)`;
+                pixel.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+                pixel.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+                overlay.appendChild(pixel);
+                setTimeout(() => pixel.remove(), 950);
+            }
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                skull.className = '';
+            }, 2300);
+        }
+
+        updateProgress();
     </script>
     <script src="https://cdn.counter.dev/script.js" data-id="ae4863f7-4922-43de-b9fc-87f792b147eb" data-utcoffset="2"></script>
 </body>
